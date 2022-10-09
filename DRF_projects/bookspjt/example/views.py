@@ -68,3 +68,58 @@ class BookAPI(APIView):
         book = get_object_or_404(Book, id=id)
         serializer = BookSerializer(book)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+#---
+#DRF mixins
+from rest_framework import generics
+from rest_framework import mixins
+class BooksAPIMixins(
+    mixins.ListModelMixin, 
+    mixins.CreateModelMixin, 
+    generics.GenericAPIView):
+
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+    def get(self, request, *args, **kwargs):            # GET 메소드 처리 함수(전체 목록)
+        return self.list(request, *args, **kwargs)      # mixins.ListModelMixin과 연결
+    def post(self, request, *args, **kwargs):           # POST 메소드 처리 함수(1권 등록)
+        return self.create(request, *args, **kwargs)    # mixins.CreateModelMixin과 연결
+
+class BookAPIMixins(
+    mixins.RetrieveModelMixin, mixins.ListModelMixin,
+    mixins.CreateModelMixin, generics.GenericAPIView):
+
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    lookup_field = 'id'
+    # 우리는 Django 기본 모델 pk가 아닌 id를 pk로 사용하고 있으니 lookup_field로 설정함
+
+    def get(self, request, *args, **kwargs):                # GET 메소드 처리 함수(1권)
+        return self.retrieve(request, *args, **kwargs)      # mixins.RetrieveModelMixin과 연결
+    def put(self, request, *args, **kwargs):                # PUT메소드 처리 함수(1권 수정)
+        return self.update(request, *args, **kwargs)      # mixins.UpdateModelMixin과 연결
+    def delete(self, request, *args, **kwargs):             # DELETE 메소드 처리 함수(1권 삭제)
+        return self.destroy(request, *args, **kwargs)      # mixins.DestroyModelMixin과 연결
+    
+# DRF 뜯어보기 : https://github.com/encode/django-rest-framework/blob/master/rest_framework/mixins.py
+
+# ---
+# DRF generics
+from rest_framework import generics
+
+class BooksAPIGenerics(generics.ListAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+class BookAPIGenerics(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    lookup_field = 'id'
+    
+
+# DRF viewset & Router
+from rest_framework import viewsets
+class BookViewSet(viewsets.ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
