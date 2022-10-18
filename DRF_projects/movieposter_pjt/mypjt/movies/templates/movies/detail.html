@@ -5,22 +5,69 @@
     <h1>DETAIL</h1>
     <div class=" border-bottom w-100 mb-4" >
     </div>
-
-    <div class="card" style="width: 18rem;">
+    <div class='d-flex'>
+      <div class="card" style="width: 18rem;">
         
         <img src="{{ movie.poster_url }}" class="card-img-top" alt="">
         <div class="card-body">
           <h5 class="card-title">{{ movie.title }}</h5>
           <h6 class="card-title">Audience : {{ movie.audience }}</h6>
-
+  
           <h6 class="card-title">Release_Date : {{ movie.release_date|date:"Y-m-d" }}</h6>
           <h6 class="card-title">Gerne : {{ movie.gerne }}</h6>
           <h6 class="card-title">Score : {{ movie.score }}</h6>
           <p class="card-text">{{ movie.description }}</p>
-          <a href={% url 'movies:update' movie.pk %} class="btn btn-info">UPDATE</a>
-          <a href={% url 'movies:delete' movie.pk %} class="btn btn-danger">DELETE</a>
+          <div>author : <a href="{% url 'accounts:profile' movie.user.username %}">{{ movie.user.username }}</a></div>
+          <hr>
+          <div>좋아요 수 : {{ movie.like_users.all|length }}</div>
+          <hr>
+          {% if request.user.pk == movie.user.pk %}
+            <a href={% url 'movies:update' movie.pk %} class="btn btn-info">UPDATE</a>
+            <a href={% url 'movies:delete' movie.pk %} class="btn btn-danger">DELETE</a>
+          {% else %}
+            <form action="{% url 'movies:likes' movie.pk %}" method="POST">
+              {% csrf_token %}
+              {% if request.user in movie.like_users.all %}
+                <button class="btn btn-danger">dislike</button>
+              {% else %}
+                <button class="btn btn-info">like</button>
+              {% endif %}
+            </form>
+
+          {% endif %} 
         </div>
       </div>  
-</div>
+
+      <div  style="width: 18rem; padding: 100px;">
+        <h3 style="width: 18rem;">댓글 목록</h3>
+        <ul style="width: 18rem;">
+          {% for comment in comments %}
+            <div class="d-flex justify-content-between ps-1 pt-2" >
+              <li style="width: 18rem;">
+                <div>{{ comment.content }}</div>
+              </li>
+              {% if request.user.pk == comment.user.pk %}
+                <div>
+                  <form action="{% url 'movies:comments_delete' movie.pk comment.pk %}" method="POST">
+                    {% csrf_token %}
+                      <button class="btn btn-danger">삭제</button>
+                  </form>
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <hr>
+        </ul>
+
+        <form action="{% url 'movies:comments_create' movie.pk %}" method='POST'>
+          {% csrf_token %}
+          {{ comment_form.as_p }}
+          <button>댓글달기</button>
+        </form>
+      </div>    
+    </div>
+
+  </div>
+
 <a href={% url 'movies:index' %} class="btn btn-warning fw-bold">BACK</a>
 {% endblock %}

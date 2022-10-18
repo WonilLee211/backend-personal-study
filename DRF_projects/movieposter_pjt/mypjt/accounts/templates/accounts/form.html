@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+<hr>
+<form action="" method="POST">
+    {% csrf_token %}
+    <hr>
+    {{form.as_p}}
+    <button>{{btn_title}}</button>
+</form>
+
+{% if request.resolver_match.url_name == "login" %}
+    로그인 페이지입니다.
+{% elif request.resolver_match.url_name == "signup" %}
+    회원 가입 페이지입니다.
+{% elif request.resolver_match.url_name == "update" %}
+    <div>
+        <form action=" {% url 'accounts:delete' %} " method="POST">
+            {% csrf_token %}
+            <input type="submit" value="회원탈퇴">
+        </form>
+    </div>
+    <hr>
+    회원정보 수정 페이지입니다.
+{% elif request.resolver_match.url_name == "change_password" %}
+    비밀번호 변경 페이지입니다.
+{% endif %}
+{% endblock content %}
+
