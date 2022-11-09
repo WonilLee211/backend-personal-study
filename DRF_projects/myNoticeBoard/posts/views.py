@@ -6,23 +6,21 @@ from rest_framework import mixins, viewsets
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
-<<<<<<< HEAD
-=======
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
->>>>>>> cd87ce6554b837886f616edcec499686b1826a9a
+# 뷰마다 필터 설정할 때 사용(setting.py에 이미 등록해서 상관없음)
+from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import PostSerializer, PostCreateSerializer, CommentSerializer, CommentCreateSerializer
 
 '''
 게시글 기능 구현 4. view 작성
-
 '''
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     permission_classes = [CustomReadOnly]
-    # filter_backends = [DjangoFilterBackend]
-    # filterset_fields = ['author', 'likes']
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['author', 'likes'] # 필터링할 필드 설정
 
     def get_serializer_class(self):
         if self.action == 'list' or 'retrieve':

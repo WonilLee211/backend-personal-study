@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken', # rest_framework.authtoken 앱 등록. 토큰 인증 방식 사용
     'corsheaders',
     'django_seed',
+    'django_filters',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -116,7 +117,18 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-    ]
+    ],
+    # 해당 프로젝트의 기본 필터링 도구를 설정
+    # 이후에 django-filter 모듈을 뷰와 같은 코드에서 직접 불러오지 않아도 잘 적용됨
+    'DEFALUT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
+    # 조회 페이지를 여러 페이지로 나누거나
+    # 한 번에 모든 글을 가져오기 부담스러울 경우 한번의 API 요청으로 가져올 수 있는 데이터 수를 제한
+    # https://www.django-rest-framework.org/api-guide/pagiantion/ 참고
+    'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE':3,
+
 }
 
 
