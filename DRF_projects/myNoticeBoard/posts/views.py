@@ -5,11 +5,18 @@ from .permissions import CustomReadOnly
 from rest_framework import mixins, viewsets
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import get_object_or_404
+<<<<<<< HEAD
+=======
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
+>>>>>>> cd87ce6554b837886f616edcec499686b1826a9a
 from .serializers import PostSerializer, PostCreateSerializer, CommentSerializer, CommentCreateSerializer
 
+'''
+게시글 기능 구현 4. view 작성
+
+'''
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
