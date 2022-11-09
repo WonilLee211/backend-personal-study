@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken', # rest_framewor.authtoken 앱 등록. 토큰 인증 방식 사용
     'corsheaders',
+    'django_seed',
 
     'django.contrib.admin',
     'django.contrib.auth',

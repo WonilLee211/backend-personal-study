@@ -1,21 +1,21 @@
-from django_filters.rest_framework import DjangoFilterBackend
+# from django_filters.rest_framework import DjangoFilterBackend
+from .models import Post, Comment
+from accounts.models import Profile
+from .permissions import CustomReadOnly
 from rest_framework import mixins, viewsets
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import get_object_or_404
-from .models import Post, Comment
 from .serializers import PostSerializer, PostCreateSerializer, CommentSerializer, CommentCreateSerializer
-from .permissions import CustomReadOnly
-from users.models import Profile
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     permission_classes = [CustomReadOnly]
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['author', 'likes']
+    # filter_backends = [DjangoFilterBackend]
+    # filterset_fields = ['author', 'likes']
 
     def get_serializer_class(self):
         if self.action == 'list' or 'retrieve':
