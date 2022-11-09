@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'accounts',
     'posts',
     'rest_framework',
-    'rest_framework.authtoken', # rest_framewor.authtoken 앱 등록. 토큰 인증 방식 사용
+    'rest_framework.authtoken', # rest_framework.authtoken 앱 등록. 토큰 인증 방식 사용
     'corsheaders',
 
     'django.contrib.admin',
@@ -134,11 +134,14 @@ USE_L10N = True
 USE_TZ = True
 
 
+'''
+미디어 파일들에 대한 경로를 지정
+/media/ 디렉토리를 미디어 파일들의 루트로 설정하여 
+이 후 미디어 파일들에 대한 경로를 지정할 때 상대경로로 간편하게 작성하기 위한 설정
+'''
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
 STATIC_URL = '/static/'
-
 # media/디렉토리를 미디어 파일들의 루트로 설정
 import os
 MEDIA_URL = '/media/'

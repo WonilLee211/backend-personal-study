@@ -12,6 +12,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token       # Token 모델
 from rest_framework.validators import UniqueValidator   # 이메일 중복 방지를 위한 도구
 
+
 class RegisterSerializer(serializers.ModelSerializer):  # 회원가입 시리얼라이저
     email = serializers.EmailField(
         required=True,
@@ -47,15 +48,19 @@ class RegisterSerializer(serializers.ModelSerializer):  # 회원가입 시리얼
         token = Token.objects.create(user=user)
         return user
 
+'''
+로그인의 경우 아예 모델과 관련없다고 봐도 무방함
+사용자가 ID/Password를 적어서 보내줬을 때 이를 확인하여 그에 해당하는 토큰을 응답하기만 하면 됨
+-> Modelserializer를 사용할 필요가 없음
+'''
 from django.contrib.auth import authenticate
 # django의 기본 authenticate 함수, 우리가 설정한 DefaultAuthBackend인 TokenAuth방식으로
 # 유저를 인증해봄
-
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True, write_only=True)
-# write_only 옵션을 통해 클라이언트 -> 서버 방향의 역직렬화는 가능
-# 서버 -> 클라이언트 방향의 직렬화는 불가능
+    # write_only 옵션을 통해 클라이언트 -> 서버 방향의 역직렬화는 가능
+    # 서버 -> 클라이언트 방향의 직렬화는 불가능
     def validate(self, data):
         user = authenticate(**data)
         if user:
@@ -64,6 +69,7 @@ class LoginSerializer(serializers.Serializer):
         raise serializers.ValidationError(
             {"error":"Unable to log in with provided credentials."})
     
+
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile

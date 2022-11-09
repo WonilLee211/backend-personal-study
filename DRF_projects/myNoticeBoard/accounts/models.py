@@ -10,10 +10,12 @@ class Profile(models.Model):
     nickname = models.CharField(max_length=128)
     position = models.CharField(max_length=128)
     subjects = models.CharField(max_length=128)
+    # 업로드할 경로, 이미지를 선택하지 않았을 때 대신 올라갈 기본값 설정
     image = models.ImageField(upload_to='profile/', default='default.png')
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
+# User모델이 post_save 이벤트를 발생시켰을 때 해당 이벤트가 일어났다는 사실을 받음
+@receiver(post_save, sender=User)                               # 프로필을 생성해주는 코드를 직접 작성하지 않아도 알아서 유저 생성 이벤트를 감지하여 프로필 자동 생성
+def create_user_profile(sender, instance, created, **kwargs):   # 해당 유저 인스턴스와 연결되는 프로필 데이터를  생성
+    if created:                                                  
         Profile.objects.create(user=instance)
         
