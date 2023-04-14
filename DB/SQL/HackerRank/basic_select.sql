@@ -67,4 +67,33 @@ Isosceles: It's a triangle with  sides of equal length.
 Scalene: It's a triangle with  sides of differing lengths.
 Not A Triangle: The given values of A, B, and C don't form a triangle.
 */
+select
+    case
+        when A + B > C and A + C > B and B + C > A then
+            case 
+                when A = B and A = C then 'Equilateral'
+                when A = B or A = C or B = C then 'Isosceles'
+                else 'Scalene'
+            end 
+        else 'Not A Triangle'
+    end as TRIANGLE_TYPE
+from TRIANGLES;
+
+/*
+Generate the following two result sets:
+
+Query an alphabetically ordered list of all names in OCCUPATIONS, immediately followed by the first letter of each profession as a parenthetical (i.e.: enclosed in parentheses). For example: AnActorName(A), ADoctorName(D), AProfessorName(P), and ASingerName(S).
+Query the number of ocurrences of each occupation in OCCUPATIONS. Sort the occurrences in ascending order, and output them in the following format:
+
+There are a total of [occupation_count] [occupation]s.
+where [occupation_count] is the number of occurrences of an occupation in OCCUPATIONS and [occupation] is the lowercase occupation name. If more than one Occupation has the same [occupation_count], they should be ordered alphabetically.
+*/
+SELECT concat(name, '(', left(Occupation, 1), ')') AS name_Profession 
+FROM OCCUPATIONS 
+ORDER BY name_Profession;
+
+SELECT CONCAT('There are a total of ', COUNT(Occupation), ' ', LOWER(Occupation), 's.') AS occupation_count
+FROM OCCUPATIONS
+GROUP BY Occupation
+ORDER BY occupation_count ASC, Occupation ASC;
 
