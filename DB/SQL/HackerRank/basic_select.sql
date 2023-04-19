@@ -97,3 +97,49 @@ FROM OCCUPATIONS
 GROUP BY Occupation
 ORDER BY occupation_count ASC, Occupation ASC;
 
+
+/*
+Pivot the Occupation column in OCCUPATIONS 
+so that each Name is sorted alphabetically and displayed underneath its corresponding Occupation. 
+The output column headers should be Doctor, Professor, Singer, and Actor, respectively.
+
+Note: Print NULL when there are no more names corresponding to an occupation.
+
+output example
+Jenny    Ashley     Meera  Jane
+Samantha Christeen  Priya  Julia
+NULL     Ketty      NULL   Maria
+
+풀이
+1. partition by를 사용하여 전체 데이터에 대해서 Occupation으로 묶고 ROW_NUMBER()를 할당해준다.
+2. 할당한 ROW_NUMBER로 묶어서 컬럼 아이템을 가로로 붙인다.
+3. null인 아이템에 대해서 MAX()로 구분해서 NULL이 아닌 아이템부터 출력하도록 한다.
+    여기서 String은 MAX 함수를 거쳐도 문제가 NULL만 구분된다.
+*/
+
+SELECT
+    MAX(CASE WHEN Occupation = 'Doctor' THEN Name END) AS 'Doctor',
+    MAX(CASE WHEN Occupation = 'Professor' THEN Name END) AS 'Professor',
+    MAX(CASE WHEN Occupation = 'Singer' THEN Name END) AS 'Singer',
+    MAX(CASE WHEN Occupation = 'Actor' THEN Name END) AS 'Actor'
+FROM
+    (SELECT *, ROW_NUMBER() OVER (PARTITION BY Occupation ORDER BY Name) rm FROM OCCUPATIONS) subquery
+GROUP BY rm;
+
+
+/*
+Write a query to find the node type of Binary Tree ordered by the value of the node. Output one of the following for each node:
+
+Root: If node is root node.
+Leaf: If node is leaf node.
+Inner: If node is neither root nor leaf node.
+*/
+select
+    distinct b1.N,
+    case 
+        when b1.P is null then 'Root'
+        when b2.N is null then 'Leaf'
+        else 'Inner'
+    end as type
+from BST b1 left join BST b2 on b1.N = b2.P
+order by b1.N;
