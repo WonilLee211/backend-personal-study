@@ -143,3 +143,42 @@ select
     end as type
 from BST b1 left join BST b2 on b1.N = b2.P
 order by b1.N;
+
+/*
+write a query to print the 
+    company_code, founder name, 
+    total number of lead managers, 
+    total number of senior managers, 
+    total number of managers, 
+    and total number of employees. 
+Order your output by ascending company_code.
+*/
+-- first problem solve
+select 
+    c.company_code, c.founder, 
+    (select count(distinct lm.lead_manager_code) from Lead_Manager lm where c.company_code = lm.company_code),
+    (select count(distinct sm.senior_manager_code) from Senior_Manager sm where c.company_code = sm.company_code),
+    (select count(distinct m.manager_code) from Manager m where c.company_code = m.company_code),
+    (select count(distinct e.employee_code) from Employee e where c.company_code = e.company_code)
+from Company c
+order by c.company_code;
+
+-- 중첩 서브 쿼리로 인한 성능 저하가 발생하기 떄문에 조인으로 수정하기
+SELECT
+    c.company_code,
+    c.founder,
+    COUNT(DISTINCT lm.lead_manager_code) as num_lead_manager,
+    COUNT(DISTINCT sm.senior_manager_code) as num_senior_manager,
+    COUNT(DISTINCT m.manager_code) as num_manager,
+    COUNT(DISTINCT e.employee_code) as num_employee
+FROM
+Company c
+    LEFT JOIN Lead_Manager lm ON c.company_code = lm.company_code
+    LEFT JOIN Senior_Manager sm ON c.company_code = sm.company_code
+    LEFT JOIN Manager m ON c.company_code = m.company_code
+    LEFT JOIN Employee e ON c.company_code = e.company_code
+GROUP BY
+    c.company_code,
+    c.founder
+ORDER BY
+    c.company_code; 
