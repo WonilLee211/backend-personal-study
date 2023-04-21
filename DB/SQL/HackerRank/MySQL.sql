@@ -182,3 +182,29 @@ GROUP BY
     c.founder
 ORDER BY
     c.company_code; 
+
+
+/* FLOOR(), AVG()
+Query the average population for all cities in CITY, rounded down to the nearest integer.
+*/
+SELECT FLOOR(AVG(POPULATION)) FROM CITY;
+
+/*
+Samantha was tasked with calculating the average monthly salaries for all employees in the EMPLOYEES table, 
+but did not realize her keyboard's  key was broken until after completing the calculation.
+ She wants your help finding the difference between her miscalculation (using salaries with any zeros removed), 
+ and the actual average salary.
+
+Write a query calculating the amount of error (i.e.:  average monthly salaries), and round it up to the next integer.
+*/
+SELECT CEIL(AVG(SALARY) - AVG(REPLACE(SALARY, '0', ''))) FROM EMPLOYEES;
+
+/* AGGREGATION FUCTION
+CEIL(숫자) : 올림
+ROUND(숫자, (자리수)) : 반올림
+TRUNCATE(숫자, 자릿수) : 내림
+FLOOR(숫자) : 내림
+ABS(TNTWK) : 절대값
+POW(X, Y), POWER(X, Y) : X의 Y 제곱
+MOD(X, Y) : X를 Y로 나눈 나머지
+*/
