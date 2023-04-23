@@ -208,3 +208,17 @@ ABS(TNTWK) : 절대값
 POW(X, Y), POWER(X, Y) : X의 Y 제곱
 MOD(X, Y) : X를 Y로 나눈 나머지
 */
+
+---
+
+/*
+We define an employee's total earnings to be their monthly `salary * months` worked, 
+and the maximum total earnings to be the maximum total earnings for any employee in the Employee table.
+Write a query to find the maximum total earnings for all employees as well as the total number of employees who have maximum total earnings. 
+Then print these values as  space-separated integers.
+*/
+SELECT MAX(E1.months * E1.salary), COUNT(E1.employee_id)
+FROM Employee E1
+INNER JOIN 
+    (SELECT MAX(months * salary) AS MAX_EARNING FROM Employee) E2 
+    ON (E1.months * E1.salary) = E2.MAX_EARNING;
