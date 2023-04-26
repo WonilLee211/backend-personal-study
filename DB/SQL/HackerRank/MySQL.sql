@@ -222,3 +222,18 @@ FROM Employee E1
 INNER JOIN 
     (SELECT MAX(months * salary) AS MAX_EARNING FROM Employee) E2 
     ON (E1.months * E1.salary) = E2.MAX_EARNING;
+
+/*
+Query the sum of Northern Latitudes (LAT_N) from STATION having values greater than 38.7880 and less than 137.2345. Truncate your answer to  decimal places.
+*/
+SELECT TRUNCATE(SUM(LAT_N), 4) FROM STATION WHERE LAT_N > 38.7880 AND LAT_N < 137.2345;
+
+/* INNER JOIN
+Query the Western Longitude (LONG_W) for the largest Northern Latitude (LAT_N) in STATION that is less than 137.2345.
+ Round your answer to  decimal places.
+*/
+SELECT ROUND(LONG_W, 4)
+FROM STATION S1
+INNER JOIN
+    (SELECT MAX(LAT_N) AS MAX_LAT FROM STATION WHERE LAT_N < 137.2345) S2
+ON S1.LAT_N = S2.MAX_LAT;
