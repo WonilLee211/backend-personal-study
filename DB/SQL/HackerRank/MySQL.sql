@@ -237,3 +237,20 @@ FROM STATION S1
 INNER JOIN
     (SELECT MAX(LAT_N) AS MAX_LAT FROM STATION WHERE LAT_N < 137.2345) S2
 ON S1.LAT_N = S2.MAX_LAT;
+
+/* SUBQUERY 
+A median is defined as a number separating the higher half of a data set from the lower half. 
+Query the median of the Northern Latitudes (LAT_N) from STATION and round your answer to  decimal places.
+*/
+SELECT ROUND(LAT_N, 4)
+FROM STATION S1
+WHERE (SELECT COUNT(*) FROM STATION S2 WHERE LAT_N > S1.LAT_N) = (SELECT COUNT(*) FROM STATION S3 WHERE LAT_N < S1.LAT_N);
+
+/* PERCENT_RANK
+PERCENT_RANK() 함수는 분위수를 계산하는 윈도우 함수입니다
+OVER(ORDER BY LAT_N ASC) 절은 PERCENT_RANK() 함수에게 LAT_N 열을 기준으로 오름차순으로 정렬하고 순위를 계산하도록 지시합니다.
+*/
+SELECT ROUND(LAT_N, 4)
+FROM 
+    (SELECT LAT_N, PERCENT_RANK() OVER(ORDER BY LAT_N ASC) PR FROM STATION) S1
+WHERE PR = 0.5;
