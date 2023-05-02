@@ -5,6 +5,7 @@
 1. [특정-기간동안-대여-가능한-자동차들의-대여비용-구하기](#특정-기간동안-대여-가능한-자동차들의-대여비용-구하기)
 2. [5월-식품들의-총매출-조회하기](#2-5월-식품들의-총매출-조회하기)
 3. [그룹별-조건에-맞는-식당-목록-출력하기](#3-그룹별-조건에-맞는-식당-목록-출력하기)
+4. []()
 ---
 
 ## 특정 기간동안 대여 가능한 자동차들의 대여비용 구하기
@@ -167,3 +168,63 @@ WHERE R1.MEMBER_ID IN (
 )
 ORDER BY RD, RT; 
 ```
+
+---
+
+## 4. 주문량이 많은 아이스크림들 조회하기
+
+- 7월 아이스크림 총 주문량과 상반기의 아이스크림 총 주문량을 더한 값이 큰 순서대로 상위 3개의 맛을 조회하는 SQL 문을 작성해주세요.
+
+<br>
+
+```sql
+SELECT
+    J.FLAVOR
+FROM (
+    SELECT
+        FLAVOR,
+        SUM(TOTAL_ORDER) SUM_ORDER
+    FROM JULY
+    GROUP BY FLAVOR
+) J
+LEFT JOIN (
+    SELECT
+        FLAVOR,
+        SUM(TOTAL_ORDER) SUM_ORDER
+    FROM FIRST_HALF
+    GROUP BY FLAVOR
+) FH
+ON J.FLAVOR = FH.FLAVOR
+ORDER BY J.SUM_ORDER + FH.SUM_ORDER DESC
+LIMIT 3
+;
+```
+<br>
+
+### 쿼리 최적화
+
+```sql
+SELECT
+    J.FLAVOR
+FROM (
+    SELECT
+        FLAVOR,
+        SUM(TOTAL_ORDER) AS SUM_ORDER
+    FROM JULY
+    GROUP BY FLAVOR
+) J
+LEFT JOIN (
+    SELECT
+        FLAVOR,
+        SUM(TOTAL_ORDER) AS SUM_ORDER
+    FROM FIRST_HALF
+    GROUP BY FLAVOR
+) FH
+ON J.FLAVOR = FH.FLAVOR
+ORDER BY (COALESCE(J.SUM_ORDER, 0) + COALESCE(FH.SUM_ORDER, 0)) DESC
+LIMIT 3;
+
+```
+
+-  `ORDER BY` 절 `COALESCE` 함수를 사용하여 `J.SUM_ORDER`와 `FH.SUM_ORDER`가 `NULL`인 경우 0으로 대체하였습니다. 
+- 이렇게 하면 `SUM_ORDER`가 `NULL`인 경우 정렬에 문제가 발생하지 않습니다.
