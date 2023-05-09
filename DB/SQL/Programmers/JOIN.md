@@ -276,3 +276,46 @@ ON
 ORDER BY AI.DATETIME
 ;
 ```
+
+## 7. 오랜 기간 보호한 동물(1)
+
+- 아직 입양을 못 간 동물 중, 가장 오래 보호소에 있었던 동물 3마리의 이름과 보호 시작일을 조회하는 SQL문을 작성해주세요. 이때 결과는 보호 시작일 순으로 조회해야 합니다.
+
+
+```SQL
+
+SELECT
+    SQ.NAME,
+    SQ.DT
+FROM (
+    SELECT
+        AI.NAME NAME,
+        AI.DATETIME DT,
+        AO.DATETIME
+    FROM ANIMAL_INS AI
+    LEFT JOIN
+        ANIMAL_OUTS AO
+    ON AI.ANIMAL_ID = AO.ANIMAL_ID
+    WHERE AO.DATETIME IS NULL
+    ORDER BY (AO.DATETIME - AI.DATETIME) DESC, AI.DATETIME
+    LIMIT 3
+) SQ
+;
+```
+<br>
+
+### 쿼리 최적화
+
+```sql
+
+SELECT
+    NAME,
+    DATETIME
+FROM ANIMAL_INS
+WHERE ANIMAL_ID NOT IN (
+    SELECT ANIMAL_ID
+    FROM ANIMAL_OUTS
+)
+ORDER BY DATETIME
+LIMIT 3;
+```
