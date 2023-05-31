@@ -142,3 +142,71 @@ ORDER BY
     MONTH, CAR_ID DESC;
 
 ```
+
+# 4. 대여 횟수가 많은 자동차들의 월별 대여 횟수 구하기
+
+- USED_GOODS_BOARD와 USED_GOODS_USER 테이블에서 완료된 중고 거래의 총금액이 70만 원 이상인 사람의 회원 ID, 닉네임, 총거래금액을 조회하는 SQL문을 작성해주세요. 결과는 총거래금액을 기준으로 오름차순 정렬해주세요.
+
+```sql
+SELECT
+    USER_ID,
+    NICKNAME,
+    U2.TOTAL_SALES
+FROM
+    USED_GOODS_USER U1
+INNER JOIN
+    (
+        SELECT 
+            WRITER_ID,
+            SUM(PRICE) AS TOTAL_SALES
+        FROM
+            USED_GOODS_BOARD
+        WHERE STATUS = 'DONE'
+        GROUP BY 
+            WRITER_ID
+    ) U2
+ON 
+    U1.USER_ID = U2.WRITER_ID
+WHERE TOTAL_SALES >= 700000
+ORDER BY
+    U2.TOTAL_SALES
+;
+
+```
+
+### 배운 점
+
+- WHERE 절과 HAVING 절의 차이
+
+WHERE 절은 USED_GOODS_BOARD 테이블에서 STATUS = 'DONE'인 행만 그룹화 전에 먼저 필터링합니다. 따라서 SUM(PRICE)는 STATUS = 'DONE'인 행의 PRICE 합계만을 계산하게 됩니다.
+
+<br>
+
+```sql
+SELECT
+    USER_ID,
+    NICKNAME,
+    U2.TOTAL_SALES
+FROM
+    USED_GOODS_USER U1
+INNER JOIN
+    (
+        SELECT 
+            WRITER_ID,
+            SUM(PRICE) AS TOTAL_SALES
+        FROM
+            USED_GOODS_BOARD
+        GROUP BY 
+            WRITER_ID
+        HAVING
+            STATUS = 'DONE'
+    ) U2
+ON 
+    U1.USER_ID = U2.WRITER_ID
+WHERE TOTAL_SALES >= 700000
+ORDER BY
+    U2.TOTAL_SALES
+;
+
+```
+HAVING 절은 그룹화된 결과에 대한 필터링을 수행합니다. 이 쿼리에서는 STATUS = 'DONE' 조건을 만족하는 그룹만을 선택하려고 시도합니다. 그러나 STATUS가 그룹화 기준(GROUP BY)에 포함되지 않았으므로, 이 쿼리는 에러를 발생시킬 것입니다.
