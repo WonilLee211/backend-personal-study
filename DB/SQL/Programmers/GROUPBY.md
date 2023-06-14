@@ -6,6 +6,9 @@
 2. [식품분류별 가장 비싼 식품의 정보 조회하기](#2-식품분류별-가장-비싼-식품의-정보-조회하기)
 3. [대여 횟수가 많은 자동차들의 월별 대여 횟수 구하기](#3-대여-횟수가-많은-자동차들의-월별-대여-횟수-구하기)
 4. [거래완료 총액이 70만원 이상인 회원 정보 구하기](#4-거래완료-총액이-70만원-이상인-회원-정보-구하기)
+5. [년, 월, 성별 별 상품 구매 회원 수 구하기](#5-년-월-성별-별-상품-구매-회원-수-구하기)
+
+---
 
 # 1. 자동차 대여 기록에서 대여중 / 대여 가능 여부 구분하기
 
@@ -212,3 +215,60 @@ ORDER BY
 
 ```
 HAVING 절은 그룹화된 결과에 대한 필터링을 수행합니다. 이 쿼리에서는 STATUS = 'DONE' 조건을 만족하는 그룹만을 선택하려고 시도합니다. 그러나 STATUS가 그룹화 기준(GROUP BY)에 포함되지 않았으므로, 이 쿼리는 에러를 발생시킬 것입니다.
+
+# 5. 년, 월, 성별 별 상품 구매 회원 수 구하기
+
+- USER_INFO 테이블과 ONLINE_SALE 테이블에서 년, 월, 성별 별로 상품을 구매한 회원수를 집계하는 SQL문을 작성해주세요. 결과는 년, 월, 성별을 기준으로 오름차순 정렬해주세요. 이때, 성별 정보가 없는 경우 결과에서 제외해주세요.
+- 동일한 날짜, 회원 ID, 상품 ID 조합에 대해서는 하나의 판매 데이터만 존재합니다.
+
+<br>
+
+### 풀이
+
+- group by로 발생하는 중복 데이터 distinct로 처리하기
+
+```sql
+SELECT 
+    YEAR(OS.SALES_DATE) AS YEAR,
+    MONTH(OS.SALES_DATE) AS MONTH,
+    SQ.GENDER, 
+    COUNT(DISTINCT OS.USER_ID) AS USERS
+FROM 
+    ONLINE_SALE OS
+INNER JOIN
+    (        
+        SELECT
+            USER_ID,
+            GENDER
+        FROM
+            USER_INFO
+        WHERE
+            GENDER IS NOT NULL
+    ) SQ
+ON OS.USER_ID = SQ.USER_ID
+GROUP BY YEAR, MONTH, SQ.GENDER
+ORDER BY YEAR, MONTH, SQ.GENDER
+;
+
+```
+
+<br>
+
+### 쿼리 최적화
+
+- WHERE 조건문을 JOIN 조건으로 이동시켜 sub query를 없애라
+
+```sql
+SELECT 
+    YEAR(OS.SALES_DATE) AS YEAR,
+    MONTH(OS.SALES_DATE) AS MONTH,
+    UI.GENDER, 
+    COUNT(DISTINCT OS.USER_ID) AS USERS
+FROM 
+    ONLINE_SALE OS
+INNER JOIN
+    USER_INFO UI
+ON OS.USER_ID = UI.USER_ID AND UI.GENDER IS NOT NULL
+GROUP BY YEAR, MONTH, UI.GENDER
+ORDER BY YEAR, MONTH, UI.GENDER;
+```
