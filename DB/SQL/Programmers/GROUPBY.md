@@ -272,3 +272,85 @@ ON OS.USER_ID = UI.USER_ID AND UI.GENDER IS NOT NULL
 GROUP BY YEAR, MONTH, UI.GENDER
 ORDER BY YEAR, MONTH, UI.GENDER;
 ```
+
+---
+
+# 6. 입양 시각 구하기(2)
+
+- 보호소에서는 몇 시에 입양이 가장 활발하게 일어나는지 알아보려 합니다. 0시부터 23시까지, 각 시간대별로 입양이 몇 건이나 발생했는지 조회하는 SQL문을 작성해주세요. 이때 결과는 시간대 순으로 정렬해야 합니다.
+- 0에서 23까지 시간이 모두 출력되어야 합니다. 정보가 없는 경우 count 값을 0으로 채웁니다.
+
+```sql
+
+SELECT
+    NUM AS HOUR,
+    COUNT(AO.ANIMAL_ID) AS COUNT
+FROM
+    (
+        SELECT 0 AS NUM UNION ALL SELECT 1
+        UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+        UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 
+        UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10
+        UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL SELECT 13
+        UNION ALL SELECT 14 UNION ALL SELECT 15 UNION ALL SELECT 16
+        UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19
+        UNION ALL SELECT 20 UNION ALL SELECT 21 UNION ALL SELECT 22
+        UNION ALL SELECT 23
+    ) H
+LEFT JOIN
+    ANIMAL_OUTS AO
+ON H.NUM = HOUR(AO.DATETIME)
+GROUP BY HOUR
+ORDER BY HOUR
+;
+
+```
+
+<br>
+
+### 쿼리 최적화
+
+1. 임시 테이블 생성
+
+```sql
+-- 임시 테이블 생성
+WITH RECURSIVE HOUR AS (
+    SELECT 0 AS HOUR
+    UNION ALL
+    SELECT HOUR + 1 FROM HOUR
+    WHERE HOUR < 23
+)
+
+SELECT 
+    H.HOUR,
+    COUNT(AO.ANIMAL_ID) AS COUNT
+FROM 
+    HOUR H 
+LEFT JOIN
+(
+    SELECT 
+        HOUR(DATETIME) AS HOUR,
+        ANIMAL_ID
+    FROM
+        ANIMAL_OUTS
+) AO
+ON H.HOUR = AO.HOUR
+GROUP BY HOUR
+ORDER BY HOUR
+;
+
+```
+
+2. 변수 선언
+
+```sql
+SET @hour := -1; -- 변수 선언
+
+SELECT (@hour := @hour + 1) as HOUR,
+(SELECT COUNT(*) FROM ANIMAL_OUTS WHERE HOUR(DATETIME) = @hour) as COUNT
+FROM ANIMAL_OUTS
+WHERE @hour < 23
+
+```
+
+[출처](https://chanhuiseok.github.io/posts/db-6/)
