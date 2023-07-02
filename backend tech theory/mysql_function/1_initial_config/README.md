@@ -1,0 +1,101 @@
+# 1. 데이터베이스 구축
+
+- DBMS 설치
+- 데이터베이스 생성
+- schema 생성
+
+## MySQL 구조
+
+- 인스턴스 -> database와 schema를 동일하게 취급, 복수생성 -> table 복수 생성
+
+## Oracle
+
+- 인스턴스 -> 데이터베이스 하나만 허용 -> schema 복수 생성 -> table 복수 생성
+
+## 1.1 schema 생성
+
+```sql
+
+CREATE SCHEMA SSAFY8 DEFAULT CHARACTER SET utf8;
+
+CREATE DATABASE FREE8 DEFAULT CHARACTER SET utf8;
+```
+
+- 동일하게 작동함
+
+
+## 1.2 테이블 셍성
+
+- 테이블이 지속 증가하면 각 필드를 외우기 힘들기 때문에 초기 설계 단계에서 comment를 항상 달아주기
+
+<br>
+
+```sql
+
+CREATE TABLE `TBL_USER_EN` (
+`USER_SEQ` BIGINT NOT NULL COMMENT '사용자 일련번호',
+`USER_ID` VARCHAR(50) NOT NULL COMMENT '사용자 아이디',
+`USER_PASS` VARCHAR(256) DEFAULT NULL COMMENT '사용자 비밀번호',
+`USER_NAME` VARCHAR(40) DEFAULT NULL COMMENT '사용자 이름',
+`USER_EMAIL` VARCHAR(200) DEFAULT NULL COMMENT '사용자 이메일',
+`REGDATE` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '사용자 등록일시',
+PRIMARY KEY (`USER_SEQ`)
+);
+
+CREATE TABLE `TBL_USER_KR` (
+`USER_SEQ` BIGINT NOT NULL COMMENT '사용자 일련번호',
+`USER_ID` VARCHAR(50) NOT NULL COMMENT '사용자 아이디',
+`USER_PASS` VARCHAR(256) DEFAULT NULL COMMENT '사용자 비밀번호',
+`USER_NAME` VARCHAR(40) DEFAULT NULL COMMENT '사용자 이름',
+`USER_EMAIL` VARCHAR(200) DEFAULT NULL COMMENT '사용자 이메일',
+`REGDATE` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '사용자 등록일시',
+PRIMARY KEY (`USER_SEQ`)
+);
+```
+
+- 국문 유저와 영문 유저 구분
+    - 반정규화로 관리
+    - partitioning 관리
+
+
+    
+```sql
+CREATE TABLE `TBL_USER_LOG` (
+`USER_LOG_SEQ` BIGINT NOT NULL AUTO_INCREMENT COMMENT '사용자 로그 일련번호',
+`USER_SEQ` BIGINT NOT NULL COMMENT '사용자 일련번호',
+`USER_ID` VARCHAR(50) NOT NULL COMMENT '사용자 아이디',
+`USER_PASS` VARCHAR(256) DEFAULT NULL COMMENT '사용자 비밀번호',
+`USER_NAME` VARCHAR(40) DEFAULT NULL COMMENT '사용자 이름',
+`USER_EMAIL` VARCHAR(200) DEFAULT NULL COMMENT '사용자 이메일',
+`ACTION` char(1) DEFAULT NULL COMMENT '변경내역(I : 등록 / U : 수정  / D : 삭제)',
+`REGDATE` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '사용자 로그 등록일시',
+PRIMARY KEY (`USER_LOG_SEQ`)
+);
+```
+- 사용자 내용이 변경 내용을 기록하는 로그 테이블
+    - 바뀌기 전 내용 저장
+    - 변경 action 저장
+<br>
+
+```sql
+
+CREATE TABLE `TBL_BOARD` (
+`BOARD_SEQ` BIGINT NOT NULL AUTO_INCREMENT COMMENT '게시판 일련번호',
+`USER_SEQ` BIGINT NOT NULL COMMENT '사용자 일련번호',
+`BOARD_TITLE` VARCHAR(200) DEFAULT NULL COMMENT '게시판 제목',
+`BOARD_CONTENTS` TEXT DEFAULT NULL COMMENT '게시판 내용',
+`REGDATE` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '게시판 등록일시',
+PRIMARY KEY (`BOARD_SEQ`)
+);
+```
+
+```sql
+DESC TBL_USER_LOG;
+
+SELECT * FROM `information_schema`.`COLUMNS` WHERE TABLE_SCHEMA='SSAFY8' AND TABLE_NAME='TBL_BOARD' ORDER BY ORDINAL_POSITION;
+```
+
+- table 세부내용 조회 쿼리
+- 
+
+<br>
